@@ -1,0 +1,41 @@
+replicaCount: 1
+
+nodeSelector: dev
+
+namespace: dev
+
+metadata:
+  deployment: worker-D-dev
+  service: worker-D-services-dev
+  hpa: hpa-worker-D-dev
+
+image:
+  repository: sehatq/worker-D
+  tag: dev
+  pullPolicy: Always
+
+port: 
+  type: ClusterIP
+  containerport: 3000
+  serviceport: 3000
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+ingress:
+  enabled: false
+  
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+    # cpu:
+    #   targetAverageUtilization: 60
+    memory:
+      targetAverageUtilization: 70

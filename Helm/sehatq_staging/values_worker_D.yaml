@@ -1,0 +1,41 @@
+replicaCount: 1
+
+nodeSelector: staging
+
+namespace: staging
+
+metadata:
+  deployment: worker-D-staging
+  service: worker-D-services-staging
+  hpa: hpa-worker-D-staging
+
+image:
+  repository: sehatq/worker-D
+  tag: staging
+  pullPolicy: Always
+
+port: 
+  type: ClusterIP
+  containerport: 3000
+  serviceport: 3000
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+ingress:
+  enabled: false
+  
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+    # cpu:
+    #   targetAverageUtilization: 60
+    memory:
+      targetAverageUtilization: 70

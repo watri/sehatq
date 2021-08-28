@@ -1,0 +1,21 @@
+{{- if .Values.ingress.enabled -}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ .Values.metadata.ingress }}
+  namespace: {{ .Values.namespace }}
+  annotations:
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+  labels:
+    name: {{ .Values.ingress.labels }}
+spec:
+{{- if .Values.ingress.tls }}
+  tls:
+{{ toYaml .Values.ingress.tls | indent 4 }}
+{{- end }}
+
+{{- if .Values.ingress.rules }}
+  rules:
+{{ toYaml .Values.ingress.rules | indent 4 }}
+  {{- end }}
+{{- end }}

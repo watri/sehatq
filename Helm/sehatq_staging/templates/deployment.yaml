@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.metadata.deployment }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    name: {{ .Values.metadata.deployment }}
+{{- if .Values.hpa.enabled }}
+spec:
+  selector:
+    matchLabels:
+      name: {{ .Values.metadata.deployment }}
+  template:
+    metadata:
+      name: {{ .Values.metadata.deployment }}
+      labels:
+        name: {{ .Values.metadata.deployment }}
+  {{ else }}
+  spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      name: {{ .Values.metadata.deployment }}
+  template:
+    metadata:
+      name: {{ .Values.metadata.deployment }}
+      labels:
+        name: {{ .Values.metadata.deployment }}
+{{ end }}
+    spec:
+      containers:
+        - name: {{ .Values.metadata.deployment }}
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.port.containerport }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      nodeSelector: 
+        ctienv: "{{ .Values.nodeSelector }}"

@@ -1,0 +1,58 @@
+replicaCount: 1
+
+nodeSelector: staging
+
+namespace: staging
+
+metadata:
+  deployment: service-A-staging
+  service: service-A-services-staging
+  ingress: service-A-ingress
+  hpa: hpa-service-A-staging
+
+image:
+  repository: sehatq/service-A
+  tag: staging
+  pullPolicy: Always
+
+port: 
+  type: ClusterIP
+  containerport: 3000
+  serviceport: 3000
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+ingress:
+  enabled: true
+  labels: nginx-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  tls:
+    - secretName: sehatq-com-tls
+      hosts:
+        - stg.sehatq.com
+  rules:
+    - host: stg.sehatq.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: service-A-services-staging
+              servicePort: 3000
+  
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+    # cpu:
+    #   targetAverageUtilization: 60
+    memory:
+      targetAverageUtilization: 70

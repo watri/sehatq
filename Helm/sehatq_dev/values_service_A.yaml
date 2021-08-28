@@ -1,0 +1,58 @@
+replicaCount: 1
+
+nodeSelector: dev
+
+namespace: dev
+
+metadata:
+  deployment: service-A-dev
+  service: service-A-services-dev
+  ingress: service-A-ingress
+  hpa: hpa-service-A-dev
+
+image:
+  repository: sehatq/service-A
+  tag: dev
+  pullPolicy: Always
+
+port: 
+  type: ClusterIP
+  containerport: 3000
+  serviceport: 3000
+
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+ingress:
+  enabled: true
+  labels: nginx-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  tls:
+    - secretName: sehatq-com-tls
+      hosts:
+        - dev.sehatq.com
+  rules:
+    - host: dev.sehatq.com
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: service-A-services-dev
+              servicePort: 3000
+  
+hpa:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 4
+  metrics:
+    # cpu:
+    #   targetAverageUtilization: 60
+    memory:
+      targetAverageUtilization: 70
