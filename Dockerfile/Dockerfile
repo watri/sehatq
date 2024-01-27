@@ -17,7 +17,7 @@ COPY . .
 
 RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-extldflags "-static"' -o /go/bin/cli cli/*
 
-FROM alpine:latest
+FROM alpine:3.19.1
 
 RUN ls
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
